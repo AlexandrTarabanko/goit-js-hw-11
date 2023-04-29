@@ -52,7 +52,7 @@ async function onSubmit(e) {
     }
 
     galleryRef.insertAdjacentHTML('beforeend', createMarkup(result));
-    simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+    let simpleLightBox = new SimpleLightbox('.gallery a').refresh();
     e.target.reset();
   }
 }
@@ -85,7 +85,7 @@ function onPagination(entries, observer) {
       }
 
       galleryRef.insertAdjacentHTML('beforeend', createMarkup(result));
-      simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+      let simpleLightBox = new SimpleLightbox('.gallery a').refresh();
     }
   });
 }
