@@ -4,6 +4,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import { queryFetch, createMarkup } from './helpers';
 
 let inputValue = '';
+let simpleLightBox;
 const formRef = document.querySelector('#search-form');
 const galleryRef = document.querySelector('.gallery');
 // const loadBtn = document.querySelector('.load-more');
