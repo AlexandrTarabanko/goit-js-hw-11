@@ -73,7 +73,6 @@ async function onSubmit(e) {
 // }
 
 function onPagination(entries, observer) {
-  console.log(entries);
   entries.forEach(async entry => {
     if (entry.isIntersecting) {
       const result = await queryFetch(inputValue);
