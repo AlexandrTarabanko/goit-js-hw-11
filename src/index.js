@@ -4,11 +4,11 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import { queryFetch, createMarkup } from './helpers';
 
 let inputValue = '';
+let page = 1;
 let simpleLightBox;
+
 const formRef = document.querySelector('#search-form');
 const galleryRef = document.querySelector('.gallery');
-// const loadBtn = document.querySelector('.load-more');
-
 const guard = document.querySelector('.js-guard');
 const options = {
   root: null,
@@ -18,10 +18,10 @@ const options = {
 const observer = new IntersectionObserver(onPagination, options);
 
 formRef.addEventListener('submit', onSubmit);
-// loadBtn.addEventListener('click', onNewImages);
 
 async function onSubmit(e) {
   e.preventDefault();
+  page = 1;
   // loadBtn.style.display = 'none';
   galleryRef.innerHTML = '';
   inputValue = e.target.elements.searchQuery.value.trim();
@@ -31,7 +31,7 @@ async function onSubmit(e) {
     return;
   }
 
-  const result = await queryFetch(inputValue);
+  const result = await queryFetch(inputValue, page);
 
   if (result.totalHits === 0) {
     Notiflix.Notify.failure(
@@ -39,12 +39,11 @@ async function onSubmit(e) {
     );
   } else {
     Notiflix.Notify.success(`Hooray! We found ${result.totalHits} images.`);
-    // Не рендерит если меншь 40 в общем
-    // Не рендерит если 40+, но меньше 80
     if (result.hits.length < 40) {
-      // Notiflix.Notify.info(
-      //   "We're sorry, but you've reached the end of search results."
-      // );
+      Notiflix.Notify.info(
+        "We're sorry, but you've reached the end of search results."
+      );
+      observer.unobserve(guard);
       // loadBtn.style.display = 'none';
     } else {
       observer.observe(guard);
@@ -56,6 +55,31 @@ async function onSubmit(e) {
     e.target.reset();
   }
 }
+
+function onPagination(entries, observer) {
+  entries.forEach(async entry => {
+    if (entry.isIntersecting) {
+      page += 1;
+      const result = await queryFetch(inputValue, page);
+
+      if (result.hits.length < 40) {
+        Notiflix.Notify.info(
+          "We're sorry, but you've reached the end of search results."
+        );
+        observer.unobserve(guard);
+      }
+
+      galleryRef.insertAdjacentHTML('beforeend', createMarkup(result));
+      let simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+    }
+  });
+}
+
+// Load Button Realization
+
+// const loadBtn = document.querySelector('.load-more');
+
+// loadBtn.addEventListener('click', onNewImages);
 
 // async function onNewImages() {
 //   // inputValue = formRef.elements.searchQuery.value.trim();
@@ -71,20 +95,3 @@ async function onSubmit(e) {
 //   galleryRef.insertAdjacentHTML('beforeend', createMarkup(result));
 //   simpleLightBox = new SimpleLightbox('.gallery a').refresh();
 // }
-
-function onPagination(entries, observer) {
-  entries.forEach(async entry => {
-    if (entry.isIntersecting) {
-      const result = await queryFetch(inputValue);
-
-      if (result.hits.length < 40) {
-        Notiflix.Notify.info(
-          "We're sorry, but you've reached the end of search results."
-        );
-      }
-
-      galleryRef.insertAdjacentHTML('beforeend', createMarkup(result));
-      let simpleLightBox = new SimpleLightbox('.gallery a').refresh();
-    }
-  });
-}

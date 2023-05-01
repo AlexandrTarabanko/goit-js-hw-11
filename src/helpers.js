@@ -3,14 +3,12 @@ import axios from 'axios';
 
 const BASE_URL = 'https://pixabay.com/api/';
 const API_KEY = '35889291-72d22f1b5530e86f5c1dc0b10';
-let page = 1;
 
-export async function queryFetch(name) {
+export async function queryFetch(name, page) {
   try {
     const query = `${BASE_URL}?key=${API_KEY}&q=${name}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${page}`;
     const response = await axios.get(query);
     const filteredResponse = response.data;
-    page += 1;
     return filteredResponse;
   } catch (error) {
     console.log(error.message);
