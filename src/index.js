@@ -31,46 +31,55 @@ async function onSubmit(e) {
     return;
   }
 
-  const result = await queryFetch(inputValue, page);
+  try {
+    const result = await queryFetch(inputValue, page);
 
-  if (result.totalHits === 0) {
-    Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-  } else {
-    Notiflix.Notify.success(`Hooray! We found ${result.totalHits} images.`);
-    if (result.hits.length < 40) {
-      Notiflix.Notify.info(
-        "We're sorry, but you've reached the end of search results."
+    if (result.totalHits === 0) {
+      Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
       );
-      observer.unobserve(guard);
-      // loadBtn.style.display = 'none';
+      return;
     } else {
-      observer.observe(guard);
-      // loadBtn.style.display = 'block';
-    }
-
-    galleryRef.insertAdjacentHTML('beforeend', createMarkup(result));
-    let simpleLightBox = new SimpleLightbox('.gallery a').refresh();
-    e.target.reset();
-  }
-}
-
-function onPagination(entries, observer) {
-  entries.forEach(async entry => {
-    if (entry.isIntersecting) {
-      page += 1;
-      const result = await queryFetch(inputValue, page);
-
+      Notiflix.Notify.success(`Hooray! We found ${result.totalHits} images.`);
       if (result.hits.length < 40) {
         Notiflix.Notify.info(
           "We're sorry, but you've reached the end of search results."
         );
         observer.unobserve(guard);
+        // loadBtn.style.display = 'none';
+      } else {
+        observer.observe(guard);
+        // loadBtn.style.display = 'block';
       }
 
       galleryRef.insertAdjacentHTML('beforeend', createMarkup(result));
       let simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+      e.target.reset();
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function onPagination(entries, observer) {
+  entries.forEach(async entry => {
+    try {
+      if (entry.isIntersecting) {
+        page += 1;
+        const result = await queryFetch(inputValue, page);
+
+        if (result.hits.length < 40) {
+          Notiflix.Notify.info(
+            "We're sorry, but you've reached the end of search results."
+          );
+          observer.unobserve(guard);
+        }
+
+        galleryRef.insertAdjacentHTML('beforeend', createMarkup(result));
+        let simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+      }
+    } catch (error) {
+      console.error(error);
     }
   });
 }
