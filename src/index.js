@@ -52,8 +52,8 @@ async function onSubmit(e) {
 
     galleryRef.insertAdjacentHTML('beforeend', createMarkup(result));
     let simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+    e.target.reset();
   }
-  e.target.reset();
 }
 
 function onPagination(entries, observer) {
