@@ -5,7 +5,7 @@ import { queryFetch, createMarkup } from './helpers';
 
 let inputValue = '';
 let page = 1;
-let simpleLightBox;
+const simpleLightBox = () => new SimpleLightbox('.gallery a', {});
 
 const formRef = document.querySelector('#search-form');
 const galleryRef = document.querySelector('.gallery');
@@ -53,7 +53,9 @@ async function onSubmit(e) {
       }
 
       galleryRef.insertAdjacentHTML('beforeend', createMarkup(result));
-      let simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+
+      simpleLightBox();
+      //const simpleLightBox = new SimpleLightbox('.gallery a');
       e.target.reset();
     }
   } catch (error) {
@@ -76,7 +78,7 @@ function onPagination(entries, observer) {
         }
 
         galleryRef.insertAdjacentHTML('beforeend', createMarkup(result));
-        let simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+        simpleLightBox().refresh();
       }
     } catch (error) {
       console.error(error);
